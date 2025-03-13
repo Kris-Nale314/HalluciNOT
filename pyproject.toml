@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hallucinot"
+version = "0.1.0"
+description = "Document-Grounded Verification for Large Language Models"
+readme = "README.md"
+authors = [
+    {name = "Kris Naleszkiewicz", email = "kris.nale@gmail.com"},
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20.0",
+    "tqdm>=4.62.0",
+    "requests>=2.25.0",
+    "pydantic>=1.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=3.0.0",
+    "black>=22.3.0",
+    "isort>=5.10.0",
+    "flake8>=4.0.0",
+    "mypy>=0.950",
+]
+bytemesumai = [
+    "bytemesumai>=0.1.0",
+]
+visualizations = [
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Kris-Nale314/hallucinot"
+"Bug Tracker" = "https://github.com/Kris-Nale314/hallucinot/issues"
+"Documentation" = "https://hallucinot.readthedocs.io/"
+"Source Code" = "https://github.com/Kris-Nale314/hallucinot"
+
+[project.scripts]
+hallucinot = "hallucinot.cli:main"
+
+[tool.setuptools]
+packages = ["hallucinot"]
+
+[tool.black]
+line-length = 88
+target-version = ["py38", "py39", "py310"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+python_classes = "Test*"

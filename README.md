@@ -1,32 +1,8 @@
 # HalluciNOT
 
-![HalluciNOT Logo](docs/assets/hallucinot_logo.png)
-
-[![PyPI version](https://img.shields.io/pypi/v/hallucinot.svg)](https://pypi.org/project/hallucinot/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/hallucinot.svg)](https://pypi.org/project/hallucinot/)
-[![License](https://img.shields.io/pypi/l/hallucinot.svg)](https://github.com/username/hallucinot/blob/main/LICENSE)
-
 ## Document-Grounded Verification for Large Language Models
 
 HalluciNOT is a modular toolkit for detecting, measuring, and mitigating hallucinations in LLM outputs when working with document-based content. It leverages rich document structure and metadata to efficiently verify LLM-generated content against source materials, ensuring factual consistency and appropriate uncertainty communication.
-
-```python
-from hallucinot import VerificationProcessor
-
-# Create verification processor
-verifier = VerificationProcessor()
-
-# Verify LLM response against document sources
-verification_result = verifier.verify(
-    llm_response="The company reported revenue of $12.5M in Q2 2023.", 
-    document_store=document_collection
-)
-
-# Get verification report
-report = verification_result.generate_report()
-print(f"Overall confidence score: {report.confidence_score}")
-print(f"Verified claims: {report.verified_claims_count}/{report.total_claims_count}")
-```
 
 ## Why HalluciNOT?
 
@@ -73,59 +49,34 @@ HalluciNOT is designed to work seamlessly with [ByteMeSumAI](https://github.com/
 2. HalluciNOT defines additional metadata requirements for verification purposes
 3. Together they create a robust pipeline for accurate, verifiable document-based AI interactions
 
-```python
-from bytemesumai import Document, ChunkingProcessor
-from hallucinot import VerificationProcessor, VerificationMetadataEnricher
+## ⚠️ Development Status
 
-# Process document with ByteMeSumAI
-doc = Document.from_file("complex_document.pdf")
-chunker = ChunkingProcessor()
-chunks = chunker.chunk_text_boundary_aware(doc.content)
+**IMPORTANT**: HalluciNOT is currently in early development and is not yet ready for production use. 
 
-# Enrich chunks with verification metadata
-enricher = VerificationMetadataEnricher()
-verification_ready_chunks = enricher.enrich_chunks(chunks)
+### Current Status
 
-# Later, verify LLM response against these chunks
-verifier = VerificationProcessor()
-verification_result = verifier.verify(llm_response, verification_ready_chunks)
-```
+- 🚧 Core architecture and interfaces defined
+- 🚧 Basic verification functionality implemented
+- 🚧 ByteMeSumAI integration in development
+- ❌ Comprehensive test suite not yet complete
+- ❌ Documentation still in progress
 
-## Getting Started
+### Roadmap
 
-### Installation
+1. **Alpha Phase** (Current)
+   - Implementing core functionality
+   - Testing with synthetic examples
+   - Refining API and interfaces
 
-```bash
-pip install hallucinot
-```
+2. **Beta Phase** (Coming Soon)
+   - Performance optimization
+   - Integration with popular RAG frameworks
+   - User testing and feedback
 
-### Basic Usage
-
-```python
-from hallucinot import ClaimExtractor, SourceMapper, ConfidenceScorer
-
-# Extract claims from LLM response
-extractor = ClaimExtractor()
-claims = extractor.extract_claims("The report indicates a 15% increase in Q3 sales.")
-
-# Map claims to document sources
-mapper = SourceMapper()
-mapped_claims = mapper.map_to_sources(claims, document_store)
-
-# Score claim confidence
-scorer = ConfidenceScorer()
-scored_claims = scorer.score_claims(mapped_claims)
-
-# Generate verification report
-for claim in scored_claims:
-    print(f"Claim: {claim.text}")
-    print(f"Confidence: {claim.confidence_score}")
-    print(f"Source: {claim.source_reference}")
-```
-
-### Advanced Usage
-
-See our [documentation](https://hallucinot.readthedocs.io/) for advanced usage scenarios, integration examples, and customization options.
+3. **Production Release**
+   - Full test coverage
+   - Comprehensive documentation
+   - Real-world case studies
 
 ## File Structure
 
