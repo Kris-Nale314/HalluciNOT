@@ -27,6 +27,11 @@ Unlike general hallucination detection systems, HalluciNOT is specifically desig
 
 ## Key Features
 
+
+<div align="center">
+  <img src="../images/workflow.svg" alt="HalluciNOT Workflow" width="800"/>
+</div>
+
 ### 🔍 Claim Detection and Source Mapping
 - Extract discrete factual assertions from LLM outputs
 - Map claims back to specific document chunks using metadata
