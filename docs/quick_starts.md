@@ -3,7 +3,7 @@
 This guide will help you get started with HalluciNOT for verifying LLM responses against document sources.
 
 <div align="center">
-  <img src="../images/workflow.svg" alt="HalluciNOT Workflow" width="800"/>
+  <img src="docs/images/workflow.svg" alt="HalluciNOT Workflow" width="800"/>
 </div>
 
 ## Basic Usage
