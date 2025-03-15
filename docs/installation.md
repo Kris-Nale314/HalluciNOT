@@ -1,3 +1,7 @@
+<div align="center">
+    <img src="images/logo.svg" alt="HalluciNOT Logo" width="200"/>
+</div>
+
 # HalluciNOT Installation Guide
 
 This guide will help you install and set up HalluciNOT for verifying LLM responses against document sources.

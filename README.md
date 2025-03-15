@@ -1,5 +1,3 @@
-# HalluciNOT
-
 <div align="center">
     <img src="docs/images/logo.svg" alt="HalluciNOT Logo" width="200"/>
 </div>
@@ -7,6 +5,8 @@
 [![PyPI version](https://img.shields.io/pypi/v/hallucinot.svg)](https://pypi.org/project/hallucinot/)
 [![Python versions](https://img.shields.io/pypi/pyversions/hallucinot.svg)](https://pypi.org/project/hallucinot/)
 [![License](https://img.shields.io/github/license/Kris-Nale314/hallucinot)](LICENSE)
+
+# HalluciNOT
 
 ## Why HalluciNOT?
 
@@ -27,9 +27,8 @@ Unlike general hallucination detection systems, HalluciNOT is specifically desig
 
 ## Key Features
 
-
 <div align="center">
-  <img src="../images/workflow.svg" alt="HalluciNOT Workflow" width="800"/>
+    <img src="docs/images/workflow.svg" alt="HalluciNOT Workflow" width="800"/>
 </div>
 
 ### 🔍 Claim Detection and Source Mapping
