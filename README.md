@@ -1,21 +1,32 @@
 # HalluciNOT
 
-## Document-Grounded Verification for Large Language Models
+<div align="center">
+    <img src="https://via.placeholder.com/200x200?text=HalluciNOT" alt="HalluciNOT Logo" width="200"/>
+    <p><strong>Document-Grounded Verification for Large Language Models</strong></p>
+</div>
 
-HalluciNOT is a modular toolkit for detecting, measuring, and mitigating hallucinations in LLM outputs when working with document-based content. It leverages rich document structure and metadata to efficiently verify LLM-generated content against source materials, ensuring factual consistency and appropriate uncertainty communication.
+[![PyPI version](https://img.shields.io/pypi/v/hallucinot.svg)](https://pypi.org/project/hallucinot/)
+[![Python versions](https://img.shields.io/pypi/pyversions/hallucinot.svg)](https://pypi.org/project/hallucinot/)
+[![License](https://img.shields.io/github/license/Kris-Nale314/hallucinot)](LICENSE)
 
 ## Why HalluciNOT?
 
-LLMs are powerful but prone to hallucinations - generating content that seems plausible but is factually incorrect or unsupported by source documents. In document-grounded applications like RAG systems, these hallucinations undermine trust and reliability.
+**The Trust Problem in AI:** Large Language Models (LLMs) have revolutionized how we interact with information, but they come with a critical flaw - hallucinations. When an LLM confidently presents incorrect information as fact, it undermines trust in AI systems and can lead to serious consequences in high-stakes domains.
 
-HalluciNOT addresses this challenge by:
+**The RAG Gap:** Retrieval-Augmented Generation (RAG) systems attempt to ground LLM outputs in reliable sources, but they often lack rigorous verification mechanisms. The source material is retrieved, but how do we ensure the LLM's claims actually align with it?
 
-- **Tracing claims back to source**: Mapping LLM assertions to specific document locations
-- **Measuring factual alignment**: Quantifying how well claims match their source material
-- **Detecting unsupported content**: Identifying claims without sufficient grounding
-- **Managing hallucinations**: Providing strategies to handle detected inaccuracies
+**HalluciNOT bridges this gap.**
 
-## Core Features
+HalluciNOT is a modular toolkit that systematically verifies LLM outputs against source documents, providing:
+
+- **Precise verification** that maps specific claims to document evidence
+- **Quantified confidence scores** for each factual assertion
+- **Actionable intervention strategies** when hallucinations are detected
+- **Transparent reporting** that builds trust through visibility
+
+Unlike general hallucination detection systems, HalluciNOT is specifically designed for document-grounded applications where source material is available as the ground truth.
+
+## Key Features
 
 ### 🔍 Claim Detection and Source Mapping
 - Extract discrete factual assertions from LLM outputs
@@ -41,77 +52,130 @@ HalluciNOT addresses this challenge by:
 - Generate detailed verification reports
 - Monitor hallucination patterns over time
 
-## Integration with ByteMeSumAI
+## Quick Start
 
-HalluciNOT is designed to work seamlessly with [ByteMeSumAI](https://github.com/username/ByteMeSumAI), leveraging its document processing pipeline:
+### Installation
 
-1. ByteMeSumAI handles document ingestion, processing, and metadata enrichment
-2. HalluciNOT defines additional metadata requirements for verification purposes
-3. Together they create a robust pipeline for accurate, verifiable document-based AI interactions
+```bash
+pip install hallucinot
 
-## ⚠️ Development Status
+# Optional: Install spaCy for enhanced claim extraction
+pip install spacy
+python -m spacy download en_core_web_sm
+```
 
-**IMPORTANT**: HalluciNOT is currently in early development and is not yet ready for production use. 
+### Basic Usage
 
-### Current Status
+```python
+from hallucinot import VerificationProcessor, DocumentStore, DocumentChunk
 
-- 🚧 Core architecture and interfaces defined
-- 🚧 Basic verification functionality implemented
-- 🚧 ByteMeSumAI integration in development
-- ❌ Comprehensive test suite not yet complete
-- ❌ Documentation still in progress
+# Create document chunks
+chunks = [
+    DocumentChunk(
+        id="doc1-chunk1",
+        text="The Earth orbits the Sun at an average distance of 93 million miles.",
+        source_document="astronomy_facts.txt"
+    ),
+    # Add more document chunks...
+]
+
+# Create document store
+document_store = DocumentStore(chunks)
+
+# Create verifier
+verifier = VerificationProcessor()
+
+# Verify an LLM response
+llm_response = "The Earth orbits the Sun at a distance of 90 million miles, completing one orbit every 365.25 days."
+result = verifier.verify(llm_response, document_store)
+
+# Print results
+print(f"Overall confidence: {result.confidence_score:.2f}")
+print(f"Hallucination score: {result.hallucination_score:.2f}")
+
+# Generate highlighted output
+highlighted = verifier.highlight_verification_result(result, format="html")
+
+# Generate corrected response
+corrected = verifier.generate_corrected_response(result, strategy="balanced")
+```
+
+## Business Value
+
+### Risk Mitigation
+- Reduce the risk of propagating false information in customer-facing AI applications
+- Protect your organization's reputation through verifiable AI claims
+- Create audit trails of verification for regulated industries
+
+### Enhanced User Trust
+- Provide transparency into the reliability of AI-generated content 
+- Allow users to distinguish between verified and unverified information
+- Build confidence in your AI systems' outputs
+
+### Operational Efficiency
+- Automate the fact-checking process that would otherwise require human review
+- Focus reviewer attention only on claims that need human verification
+- Reduce the time and cost of manually validating AI outputs
+
+### Competitive Advantage
+- Differentiate your AI offerings with superior factual reliability
+- Address a key concern that limits enterprise adoption of generative AI
+- Demonstrate responsible AI practices to stakeholders
+
+## Integration with RAG Systems
+
+HalluciNOT works seamlessly with [ByteMeSumAI](https://github.com/username/ByteMeSumAI) and other RAG frameworks to create a complete document processing and verification pipeline:
+
+1. Document ingestion and chunking (RAG system)
+2. Metadata enrichment and embeddings (RAG system)
+3. LLM response generation (RAG system)
+4. Claim extraction and verification (HalluciNOT)
+5. Confidence scoring and reporting (HalluciNOT)
+6. Hallucination correction (HalluciNOT)
+
+## Technical Approach
+
+HalluciNOT uses a modular architecture with specialized components:
+
+1. **Claim Extraction**: Identifies discrete factual assertions in text
+2. **Source Mapping**: Maps claims to supporting document chunks
+3. **Confidence Scoring**: Calculates alignment scores and confidence metrics
+4. **Intervention Selection**: Recommends strategies for handling hallucinations
+5. **Visualization**: Generates reports and highlighted outputs
+
+Each component can be configured independently, allowing for customization to specific use cases.
+
+## Status and Roadmap
+
+**Current Status**: Alpha release (v0.1.0)
 
 ### Roadmap
 
 1. **Alpha Phase** (Current)
-   - Implementing core functionality
-   - Testing with synthetic examples
-   - Refining API and interfaces
+   - Core verification functionality
+   - Basic integration capabilities
+   - Rule-based and NLP-based claim extraction
 
-2. **Beta Phase** (Coming Soon)
+2. **Beta Phase** (Q2 2025)
    - Performance optimization
+   - Enhanced visualization options
    - Integration with popular RAG frameworks
-   - User testing and feedback
+   - Benchmarking suite
 
-3. **Production Release**
+3. **Production Release** (Q3 2025)
    - Full test coverage
    - Comprehensive documentation
+   - Pre-trained models for claim extraction
    - Real-world case studies
 
-## File Structure
+## Use Cases
 
-```
-hallucinot/
-├── __init__.py
-├── claim_extraction/
-│   ├── __init__.py
-│   ├── extractor.py       # Core claim extraction logic
-│   └── models.py          # Claim data structures
-├── source_mapping/
-│   ├── __init__.py
-│   ├── mapper.py          # Source mapping algorithms
-│   └── scoring.py         # Alignment scoring functions
-├── confidence/
-│   ├── __init__.py
-│   ├── scorer.py          # Confidence scoring system
-│   └── calibration.py     # Confidence calibration utilities
-├── visualization/
-│   ├── __init__.py
-│   ├── highlighter.py     # Text highlighting utilities
-│   └── reporting.py       # Report generation
-├── handlers/
-│   ├── __init__.py
-│   ├── strategies.py      # Intervention strategy selection
-│   └── corrections.py     # Correction generation utilities
-├── integration/
-│   ├── __init__.py
-│   ├── bytemesumai.py     # ByteMeSumAI integration
-│   └── metadata.py        # Metadata enrichment utilities
-├── utils/
-│   ├── __init__.py
-│   └── common.py          # Shared utilities
-└── processor.py           # Main verification processor
-```
+- **Enterprise Knowledge Bases**: Verify information extracted from company documents
+- **Customer Support**: Ensure accurate responses based on product documentation
+- **Legal & Compliance**: Verify claims against regulatory documents
+- **Research Analysis**: Ground scientific claims in research papers
+- **Educational Content**: Ensure factual accuracy in learning materials
+- **Content Creation**: Validate auto-generated content against style guides
 
 ## Contributing
 
@@ -120,6 +184,11 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+- **Kris Naleszkiewicz** - [kris.nale@gmail.com](mailto:kris.nale@gmail.com)
+- **Project Link**: [https://github.com/Kris-Nale314/hallucinot](https://github.com/Kris-Nale314/hallucinot)
 
 ## Acknowledgments
 
