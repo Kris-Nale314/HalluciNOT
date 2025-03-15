@@ -1,8 +1,7 @@
 # HalluciNOT
 
 <div align="center">
-    <img src="https://via.placeholder.com/200x200?text=HalluciNOT" alt="HalluciNOT Logo" width="200"/>
-    <p><strong>Document-Grounded Verification for Large Language Models</strong></p>
+    <img src="docs/images/logo.svg" alt="HalluciNOT Logo" width="200"/>
 </div>
 
 [![PyPI version](https://img.shields.io/pypi/v/hallucinot.svg)](https://pypi.org/project/hallucinot/)
@@ -187,7 +186,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- **Kris Naleszkiewicz** - [kris.nale@gmail.com](mailto:kris.nale@gmail.com)
 - **Project Link**: [https://github.com/Kris-Nale314/hallucinot](https://github.com/Kris-Nale314/hallucinot)
 
 ## Acknowledgments
