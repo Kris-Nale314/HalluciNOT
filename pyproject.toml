@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -40,6 +40,9 @@ dev = [
     "flake8>=4.0.0",
     "mypy>=0.950",
 ]
+nlp = [
+    "spacy>=3.0.0",
+]
 bytemesumai = [
     "bytemesumai>=0.1.0",
 ]
@@ -47,11 +50,17 @@ visualizations = [
     "matplotlib>=3.5.0",
     "seaborn>=0.11.0",
 ]
+all = [
+    "spacy>=3.0.0",
+    "bytemesumai>=0.1.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/Kris-Nale314/hallucinot"
 "Bug Tracker" = "https://github.com/Kris-Nale314/hallucinot/issues"
-"Documentation" = "https://hallucinot.readthedocs.io/"
+"Documentation" = "https://github.com/Kris-Nale314/hallucinot/tree/main/docs"
 "Source Code" = "https://github.com/Kris-Nale314/hallucinot"
 
 [project.scripts]
@@ -59,6 +68,12 @@ hallucinot = "hallucinot.cli:main"
 
 [tool.setuptools]
 packages = ["hallucinot"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"hallucinot" = ["py.typed"]
+"hallucinot.docs" = ["*.md"]
+"hallucinot.docs.images" = ["*.svg", "*.png"]
 
 [tool.black]
 line-length = 88

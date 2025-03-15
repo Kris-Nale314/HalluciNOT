@@ -5,6 +5,13 @@ __pycache__/
 .env
 .DS_Store
 
+# Virtual environments
+venv/
+env/
+ENV/
+.env/
+.venv/
+
 
 # C extensions
 *.so
