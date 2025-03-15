@@ -1,122 +1,139 @@
 """
-Basic Verification Example
+HalluciNOT Basic Usage Example
 
-This example demonstrates how to use HalluciNOT for verifying
-an LLM response against a simple document store.
+This example demonstrates the core functionality of HalluciNOT for
+verifying LLM responses against document chunks.
 """
-
 import sys
 import os
 import logging
+from typing import List
 
-# Add the parent directory to the path to access the package
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from hallucinot import (
-    VerificationProcessor,
-    DocumentChunk,
-    DocumentStore,
-    BoundaryType,
-    highlight_verification_result
-)
-
-# Set up logging
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-# Create a sample document store
-def create_sample_document_store():
-    """Create a sample document store for demonstration."""
+# Import HalluciNOT
+from hallucinot import (
+    VerificationProcessor,
+    DocumentStore,
+    DocumentChunk,
+    Claim,
+    ClaimType,
+    highlight_verification_result
+)
+
+
+def create_sample_documents() -> List[DocumentChunk]:
+    """Create sample document chunks for testing."""
     chunks = [
         DocumentChunk(
-            id="chunk1",
-            text="Apple Inc. was founded on April 1, 1976, by Steve Jobs, Steve Wozniak, and Ronald Wayne. The company was established to develop and sell Wozniak's Apple I personal computer.",
-            source_document="company_history.txt",
-            boundary_type=BoundaryType.PARAGRAPH,
+            id="doc1-chunk1",
+            text="The first artificial neural network was developed by Warren McCulloch and Walter Pitts in 1943. Their paper, titled 'A Logical Calculus of the Ideas Immanent in Nervous Activity', proposed a computational model for neural networks based on mathematics and algorithms.",
+            source_document="ai_history.txt",
             entities=[
-                {"text": "Apple Inc.", "type": "organization"},
-                {"text": "April 1, 1976", "type": "date"},
-                {"text": "Steve Jobs", "type": "person"},
-                {"text": "Steve Wozniak", "type": "person"},
-                {"text": "Ronald Wayne", "type": "person"},
-                {"text": "Apple I", "type": "product"}
+                {"text": "Warren McCulloch", "label": "PERSON"},
+                {"text": "Walter Pitts", "label": "PERSON"},
+                {"text": "1943", "label": "DATE"}
             ]
         ),
         DocumentChunk(
-            id="chunk2",
-            text="In 2021, Apple's revenue was $365.8 billion, making it one of the world's most valuable companies. The company employs over 147,000 people worldwide.",
-            source_document="company_financials.txt",
-            boundary_type=BoundaryType.PARAGRAPH,
+            id="doc1-chunk2",
+            text="Frank Rosenblatt created the perceptron in 1958, which was the first implementation of a trainable artificial neural network. The perceptron was initially implemented as a machine called the Mark 1 Perceptron.",
+            source_document="ai_history.txt",
             entities=[
-                {"text": "Apple", "type": "organization"},
-                {"text": "2021", "type": "date"},
-                {"text": "$365.8 billion", "type": "money"}
+                {"text": "Frank Rosenblatt", "label": "PERSON"},
+                {"text": "perceptron", "label": "CONCEPT"},
+                {"text": "1958", "label": "DATE"},
+                {"text": "Mark 1 Perceptron", "label": "PRODUCT"}
             ]
         ),
         DocumentChunk(
-            id="chunk3",
-            text="The iPhone was first announced by Steve Jobs on January 9, 2007. It was released on June 29, 2007, and multiple revisions have been released since then.",
-            source_document="product_history.txt",
-            boundary_type=BoundaryType.PARAGRAPH,
+            id="doc2-chunk1",
+            text="Transformers were introduced in the paper 'Attention Is All You Need' by Vaswani et al. in 2017. This architecture revolutionized natural language processing and forms the basis for models like GPT and BERT.",
+            source_document="transformer_models.txt",
             entities=[
-                {"text": "iPhone", "type": "product"},
-                {"text": "Steve Jobs", "type": "person"},
-                {"text": "January 9, 2007", "type": "date"},
-                {"text": "June 29, 2007", "type": "date"}
+                {"text": "Transformers", "label": "CONCEPT"},
+                {"text": "Attention Is All You Need", "label": "WORK_OF_ART"},
+                {"text": "Vaswani", "label": "PERSON"},
+                {"text": "2017", "label": "DATE"},
+                {"text": "GPT", "label": "PRODUCT"},
+                {"text": "BERT", "label": "PRODUCT"}
             ]
         ),
         DocumentChunk(
-            id="chunk4",
-            text="Apple's headquarters, Apple Park, is a circular building in Cupertino, California. It was opened in 2017 and cost approximately $5 billion to build.",
-            source_document="company_facilities.txt",
-            boundary_type=BoundaryType.PARAGRAPH,
+            id="doc2-chunk2",
+            text="BERT (Bidirectional Encoder Representations from Transformers) was developed by Google in 2018. It was a significant breakthrough in NLP that allowed models to consider context from both directions in text.",
+            source_document="transformer_models.txt",
             entities=[
-                {"text": "Apple", "type": "organization"},
-                {"text": "Apple Park", "type": "location"},
-                {"text": "Cupertino, California", "type": "location"},
-                {"text": "2017", "type": "date"},
-                {"text": "$5 billion", "type": "money"}
+                {"text": "BERT", "label": "PRODUCT"},
+                {"text": "Google", "label": "ORG"},
+                {"text": "2018", "label": "DATE"}
             ]
         )
     ]
     
-    return DocumentStore(chunks)
+    return chunks
+
 
 def main():
-    # Create a sample document store
-    document_store = create_sample_document_store()
-    print(f"Created document store with {document_store.count} chunks")
+    # Create sample document chunks
+    chunks = create_sample_documents()
+    print(f"Created {len(chunks)} sample document chunks")
+    
+    # Create a document store
+    document_store = DocumentStore(chunks)
     
     # Sample LLM response to verify
     llm_response = """
-    Apple Inc. was founded on April 1, 1976, by Steve Jobs, Steve Wozniak, and Ronald Wayne.
-    In 2022, Apple's revenue was $378 billion, showing continued growth from previous years.
-    The iPhone was first announced in January 2007 and released in June of the same year.
-    The Apple Park headquarters in Cupertino cost about $4 billion to construct and was completed in 2017.
-    The company has over 150,000 employees worldwide as of 2023.
+    The history of artificial neural networks began with Warren McCulloch and Walter Pitts in 1943.
+    They developed the first computational model based on mathematical algorithms that mimicked neural networks.
+    In 1957, Frank Rosenblatt invented the perceptron, which was the first trainable neural network model.
+    Later developments include transformers, which were introduced in the paper "Attention Is All You Need" in 2017.
+    Google developed BERT in 2019, which was a major breakthrough in bidirectional language understanding.
+    Today, neural networks power most advanced AI systems including self-driving cars and medical diagnostics.
     """
     
     print("\nSample LLM response to verify:")
     print(llm_response)
     
     # Create a verification processor
-    verifier = VerificationProcessor()
+    config = {
+        "extractor": {
+            "use_spacy": True,  # Set to False if spaCy is not installed
+            "enable_entity_extraction": True
+        },
+        "mapper": {
+            "min_alignment_score": 0.5,
+            "max_sources_per_claim": 2
+        },
+        "scorer": {
+            "unsupported_claim_score": 0.1
+        },
+        "intervention": {
+            "hallucination_threshold": 0.3,
+            "uncertain_threshold": 0.7
+        },
+        "enable_claim_merging": True
+    }
     
-    # Verify the LLM response
+    verifier = VerificationProcessor(config)
+    
+    # Verify the response
     print("\nVerifying response...")
-    verification_result = verifier.verify(llm_response, document_store)
+    result = verifier.verify(llm_response, document_store)
     
     # Print verification summary
-    print("\nVerification Summary:")
-    print(f"Overall confidence score: {verification_result.confidence_score:.2f}")
-    print(f"Hallucination score: {verification_result.hallucination_score:.2f}")
-    print(f"Claims verified: {sum(1 for c in verification_result.claims if c.has_source)}/{len(verification_result.claims)}")
+    print("\nVerification Result:")
+    print(f"Overall confidence score: {result.confidence_score:.2f}")
+    print(f"Hallucination score: {result.hallucination_score:.2f}")
+    print(f"Claims verified: {sum(1 for c in result.claims if c.has_source)}/{len(result.claims)}")
     
-    # Print detailed claim information
+    # Print claim details
     print("\nDetailed Claim Analysis:")
-    for i, claim in enumerate(verification_result.claims):
+    for i, claim in enumerate(result.claims):
         print(f"\nClaim {i+1}: \"{claim.text}\"")
         print(f"  Type: {claim.type.value}")
         print(f"  Confidence: {claim.confidence_score:.2f}")
@@ -124,32 +141,39 @@ def main():
         if claim.has_source:
             print(f"  Source: {claim.best_source.document_id}")
             print(f"  Excerpt: \"{claim.best_source.text_excerpt}\"")
+            print(f"  Alignment: {claim.best_source.alignment_score:.2f}")
         else:
             print("  Source: No direct source found")
     
-    # Generate a highlighted version of the response
-    print("\nHighlighted Response (text format):")
-    highlighted = highlight_verification_result(verification_result, format="text")
+    # Print intervention recommendations
+    if result.interventions:
+        print("\nRecommended Interventions:")
+        for i, intervention in enumerate(result.interventions):
+            claim = result.get_claim_by_id(intervention.claim_id)
+            print(f"\nIntervention {i+1} for claim: \"{claim.text}\"")
+            print(f"  Type: {intervention.intervention_type.value}")
+            print(f"  Confidence: {intervention.confidence:.2f}")
+            print(f"  Recommendation: {intervention.recommendation}")
+    
+    # Generate highlighted text
+    highlighted = highlight_verification_result(result, format="text")
+    print("\nHighlighted Text Output:")
     print(highlighted)
     
-    # Generate a corrected response if needed
-    if verification_result.hallucination_score > 0.2:
-        print("\nGenerating corrected response...")
-        from hallucinot.handlers.corrections import generate_corrected_response
-        corrected = generate_corrected_response(verification_result, strategy="explanatory")
-        print("\nCorrected Response:")
-        print(corrected)
+    # Generate corrected response
+    corrected = verifier.generate_corrected_response(result, strategy="balanced")
+    print("\nCorrected Response:")
+    print(corrected)
     
-    # Generate HTML report (typically saved to a file)
-    from hallucinot.visualization.reporting import ReportGenerator
-    report_generator = ReportGenerator()
-    html_report = report_generator.generate_html_report(verification_result)
+    # Generate HTML report
+    html_report = verifier.generate_report(result, format="html")
     
     # Save the HTML report to a file
     with open("verification_report.html", "w") as f:
         f.write(html_report)
     
     print("\nSaved HTML verification report to verification_report.html")
+
 
 if __name__ == "__main__":
     main()

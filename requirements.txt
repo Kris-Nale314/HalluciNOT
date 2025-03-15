@@ -1,1 +1,4 @@
 #
+spacy
+nltk
+transformers

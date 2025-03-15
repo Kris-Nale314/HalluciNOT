@@ -1,0 +1,136 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Verification Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+                .report-container { max-width: 800px; margin: 0 auto; }
+                .report-header { background-color: #f4f4f4; padding: 15px; border-radius: 5px; }
+                .report-summary { margin-top: 20px; padding: 15px; background-color: #e9f7fe; border-radius: 5px; }
+                .confidence-high { color: #0c0; }
+                .confidence-medium { color: #cc0; }
+                .confidence-low { color: #c00; }
+                .claim-card { border: 1px solid #ddd; border-radius: 5px; margin-bottom: 15px; padding: 15px; }
+                .claim-high { border-left: 5px solid #0c0; }
+                .claim-medium { border-left: 5px solid #cc0; }
+                .claim-low { border-left: 5px solid #c00; }
+                .source-excerpt { background-color: #f9f9f9; border-left: 3px solid #ddd; padding: 10px; margin: 10px 0; }
+                .intervention { background-color: #fff8e1; padding: 10px; border-radius: 5px; margin-top: 10px; }
+                .metrics { display: flex; justify-content: space-between; margin: 20px 0; }
+                .metric-card { text-align: center; padding: 15px; background-color: #f4f4f4; border-radius: 5px; width: 30%; }
+                .metric-value { font-size: 24px; font-weight: bold; margin: 10px 0; }
+                .footer { margin-top: 30px; font-size: 0.8em; color: #666; text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class="report-container">
+                <div class="report-header">
+                    <h1>Verification Report</h1>
+                    <p>Generated on: 2025-03-15 09:06:15</p>
+                </div>
+                
+                <div class="metrics">
+                    <div class="metric-card">
+                        <h3>Overall Confidence</h3>
+                        <div class="metric-value confidence-high">
+                            0.70
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Verified Claims</h3>
+                        <div class="metric-value">
+                            2/3
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Hallucination Score</h3>
+                        <div class="metric-value confidence-medium">
+                            0.33
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-summary">
+                    <h2>Summary</h2>
+                    <p>The response has moderate factual accuracy, with 2/3 claims supported by source material. Significant hallucinations were detected (33% of claims).
+
+Recommended interventions: 1 total, 1 removals.</p>
+                </div>
+        
+                <h2>Claim Analysis</h2>
+            
+                <div class="claim-card claim-high">
+                    <h3>Claim: "The history of artificial neural networks began with Warren McCulloch and Walter Pitts in 1943."</h3>
+                    <p><strong>Type:</strong> temporal</p>
+                    <p><strong>Confidence:</strong> <span class="confidence-high">1.00</span></p>
+                
+                    <h4>Sources:</h4>
+                    
+                        <div>
+                            <p><strong>Document:</strong> ai_history.txt</p>
+                            <p><strong>Alignment:</strong> 1.00</p>
+                            <div class="source-excerpt">
+                                The first artificial neural network was developed by Warren McCulloch and Walter Pitts in 1943.
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <p><strong>Document:</strong> ai_history.txt</p>
+                            <p><strong>Alignment:</strong> 1.00</p>
+                            <div class="source-excerpt">
+                                Frank Rosenblatt created the perceptron in 1958, which was the first implementation of a trainable artificial neural network.
+                            </div>
+                        </div>
+                        
+                </div>
+                
+                <div class="claim-card claim-low">
+                    <h3>Claim: "They developed the first computational model based on mathematical algorithms that mimicked neural networks."</h3>
+                    <p><strong>Type:</strong> other</p>
+                    <p><strong>Confidence:</strong> <span class="confidence-low">0.10</span></p>
+                
+                    <p><strong>Sources:</strong> No supporting sources found</p>
+                    
+                    <div class="intervention">
+                        <h4>Recommended Intervention: removal</h4>
+                        <p><strong>Recommendation:</strong> Remove this claim as it lacks sufficient source support</p>
+                        <p><strong>Explanation:</strong> Claim has very low confidence score (0.10) and insufficient source support (0 sources).</p>
+                    </div>
+                    
+                </div>
+                
+                <div class="claim-card claim-high">
+                    <h3>Claim: "In 1957, Frank Rosenblatt invented the perceptron, which was the first trainable neural network model.Today, neural networks power most advanced AI systems including self-driving cars and medical diagnostics."</h3>
+                    <p><strong>Type:</strong> temporal</p>
+                    <p><strong>Confidence:</strong> <span class="confidence-high">1.00</span></p>
+                
+                    <h4>Sources:</h4>
+                    
+                        <div>
+                            <p><strong>Document:</strong> ai_history.txt</p>
+                            <p><strong>Alignment:</strong> 1.00</p>
+                            <div class="source-excerpt">
+                                The first artificial neural network was developed by Warren McCulloch and Walter Pitts in 1943.
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <p><strong>Document:</strong> ai_history.txt</p>
+                            <p><strong>Alignment:</strong> 1.00</p>
+                            <div class="source-excerpt">
+                                Frank Rosenblatt created the perceptron in 1958, which was the first implementation of a trainable artificial neural network.
+                            </div>
+                        </div>
+                        
+                </div>
+                
+                <div class="footer">
+                    <p>Generated by HalluciNOT Verification System</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        

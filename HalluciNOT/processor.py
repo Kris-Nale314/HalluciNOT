@@ -1,21 +1,21 @@
 """
-HalluciNOT Verification Processor
+Main Verification Processor
 
-This module provides the main entry point for the HalluciNOT verification system.
-The VerificationProcessor orchestrates the entire verification workflow, from
-claim extraction to confidence scoring and report generation.
+This module provides the main entry point for the verification process,
+coordinating the extraction, mapping, scoring, and intervention components.
 """
 
 from typing import List, Dict, Any, Optional, Union
 import logging
+import uuid
 
-# Import from submodules
-from .claim_extraction.extractor import ClaimExtractor
+from .claim_extraction.extractor import ClaimExtractor, ClaimMerger
 from .source_mapping.mapper import SourceMapper
 from .confidence.scorer import ConfidenceScorer
-from .visualization.reporting import ReportGenerator
 from .handlers.strategies import InterventionSelector
-from .utils.common import DocumentStore, VerificationResult
+from .utils.common import (
+    Claim, DocumentStore, VerificationResult, VerificationReport
+)
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -23,192 +23,218 @@ logger = logging.getLogger(__name__)
 
 class VerificationProcessor:
     """
-    Main processor class for verifying LLM outputs against document sources.
+    Main processor for verifying LLM responses against source documents.
     
-    This class orchestrates the entire verification pipeline:
-    1. Extract claims from LLM output
-    2. Map claims to source document chunks
-    3. Score claim confidence based on source alignment
-    4. Generate verification report
-    5. Apply intervention strategies if needed
-    
-    The processor can be customized with different extractors, mappers,
-    scorers, and handlers to adapt to specific use cases.
+    This class coordinates the entire verification pipeline, from claim
+    extraction to confidence scoring and intervention recommendation.
     """
     
-    def __init__(
-        self,
-        claim_extractor: Optional[ClaimExtractor] = None,
-        source_mapper: Optional[SourceMapper] = None,
-        confidence_scorer: Optional[ConfidenceScorer] = None,
-        report_generator: Optional[ReportGenerator] = None,
-        intervention_selector: Optional[InterventionSelector] = None,
-        config: Optional[Dict[str, Any]] = None
-    ):
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         """
-        Initialize the verification processor with optional custom components.
+        Initialize the verification processor with configuration options.
         
         Args:
-            claim_extractor: Custom claim extraction component
-            source_mapper: Custom source mapping component
-            confidence_scorer: Custom confidence scoring component
-            report_generator: Custom report generation component
-            intervention_selector: Custom intervention selection component
-            config: Configuration options for the processor
+            config: Configuration options for the processor and its components
         """
-        # Initialize configuration
         self.config = config or {}
         
-        # Initialize components (use defaults if not provided)
-        self.claim_extractor = claim_extractor or ClaimExtractor()
-        self.source_mapper = source_mapper or SourceMapper()
-        self.confidence_scorer = confidence_scorer or ConfidenceScorer()
-        self.report_generator = report_generator or ReportGenerator()
-        self.intervention_selector = intervention_selector or InterventionSelector()
+        # Component-specific configurations
+        extractor_config = self.config.get("extractor", {})
+        merger_config = self.config.get("merger", {})
+        mapper_config = self.config.get("mapper", {})
+        scorer_config = self.config.get("scorer", {})
+        intervention_config = self.config.get("intervention", {})
+        
+        # Initialize components
+        self.claim_extractor = ClaimExtractor(extractor_config)
+        self.claim_merger = ClaimMerger(merger_config)
+        self.source_mapper = SourceMapper(mapper_config)
+        self.confidence_scorer = ConfidenceScorer(scorer_config)
+        self.intervention_selector = InterventionSelector(intervention_config)
+        
+        # Default settings
+        self.enable_claim_merging = self.config.get("enable_claim_merging", True)
+        self.auto_generate_report = self.config.get("auto_generate_report", False)
         
         logger.debug("VerificationProcessor initialized with config: %s", self.config)
     
     def verify(
         self, 
-        llm_response: str, 
-        document_store: DocumentStore,
-        query: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        text: str,
+        document_store: DocumentStore
     ) -> VerificationResult:
         """
         Verify an LLM response against a document store.
         
-        This method runs the complete verification pipeline, extracting claims
-        from the LLM response, mapping them to source documents, scoring their
-        confidence, and generating a verification result.
+        This method runs the complete verification pipeline:
+        1. Extract claims from the text
+        2. Map claims to source documents
+        3. Calculate confidence scores
+        4. Recommend interventions for hallucinations
         
         Args:
-            llm_response: The text response from an LLM to verify
+            text: The LLM-generated text to verify
             document_store: Collection of document chunks to verify against
-            query: Optional original query that generated the response
-            metadata: Optional additional metadata for verification
             
         Returns:
-            VerificationResult containing verification data and reports
+            VerificationResult with claims, confidence scores, and interventions
         """
-        logger.info("Starting verification of LLM response")
+        logger.info("Starting verification of text (%d characters) against %d document chunks", 
+                  len(text), document_store.count)
         
-        # Track processing metadata
-        processing_metadata = {
-            "query": query,
-            **(metadata or {})
-        }
+        # Extract claims from the text
+        claims = self.extract_claims(text)
+        logger.info("Extracted %d claims from text", len(claims))
         
-        # STEP 1: Extract claims from LLM response
-        # TODO: Implement claim extraction functionality
-        logger.debug("Extracting claims from response")
-        claims = self.claim_extractor.extract_claims(llm_response)
-        logger.info("Extracted %d claims from response", len(claims))
+        # Optionally merge related claims
+        if self.enable_claim_merging and claims:
+            claims = self.claim_merger.merge_claims(claims)
+            logger.info("Merged into %d claims", len(claims))
         
-        # STEP 2: Map claims to source documents
-        # TODO: Implement source mapping functionality
-        logger.debug("Mapping claims to source documents")
-        mapped_claims = self.source_mapper.map_to_sources(claims, document_store)
-        logger.info("Mapped %d/%d claims to sources", 
-                    sum(1 for c in mapped_claims if c.has_source), 
-                    len(mapped_claims))
+        # Map claims to sources
+        claims = self.map_claims_to_sources(claims, document_store)
+        logger.info("Mapped %d claims to sources", len(claims))
         
-        # STEP 3: Score claim confidence
-        # TODO: Implement confidence scoring functionality
-        logger.debug("Scoring claim confidence")
-        scored_claims = self.confidence_scorer.score_claims(mapped_claims)
+        # Score claim confidence
+        claims = self.score_claim_confidence(claims)
+        logger.info("Scored confidence for %d claims", len(claims))
         
-        # STEP 4: Select intervention strategies if needed
-        # TODO: Implement intervention selection
-        logger.debug("Selecting intervention strategies")
-        interventions = self.intervention_selector.select_interventions(scored_claims)
+        # Select interventions for hallucinations
+        interventions = self.select_interventions(claims)
+        logger.info("Selected %d interventions", len(interventions))
         
-        # STEP 5: Generate verification result
-        # TODO: Implement result generation
-        logger.debug("Generating verification result")
+        # Create verification result
         result = VerificationResult(
-            original_response=llm_response,
-            claims=scored_claims,
+            original_response=text,
+            claims=claims,
             interventions=interventions,
-            metadata=processing_metadata
+            metadata={
+                "verification_id": str(uuid.uuid4()),
+                "text_length": len(text),
+                "document_count": document_store.count,
+                "claim_count": len(claims),
+                "intervention_count": len(interventions)
+            }
         )
         
-        # STEP 6: Generate report if requested
-        if self.config.get("auto_generate_report", False):
-            result.report = self.report_generator.generate_report(result)
-        
-        logger.info("Verification completed with confidence score: %s", 
-                    result.confidence_score)
+        # Optionally generate report
+        if self.auto_generate_report:
+            from .visualization.reporting import ReportGenerator
+            report_generator = ReportGenerator()
+            result.report = report_generator.generate_report(result)
         
         return result
     
-    def highlight_response(
+    def extract_claims(self, text: str) -> List[Claim]:
+        """
+        Extract claims from text.
+        
+        Args:
+            text: Text to extract claims from
+            
+        Returns:
+            List of extracted claims
+        """
+        return self.claim_extractor.extract_claims(text)
+    
+    def map_claims_to_sources(
+        self, 
+        claims: List[Claim],
+        document_store: DocumentStore
+    ) -> List[Claim]:
+        """
+        Map claims to sources in the document store.
+        
+        Args:
+            claims: Claims to map to sources
+            document_store: Document store to search for sources
+            
+        Returns:
+            Claims with source references added
+        """
+        return self.source_mapper.map_to_sources(claims, document_store)
+    
+    def score_claim_confidence(self, claims: List[Claim]) -> List[Claim]:
+        """
+        Calculate confidence scores for claims.
+        
+        Args:
+            claims: Claims to score
+            
+        Returns:
+            Claims with confidence scores added
+        """
+        return self.confidence_scorer.score_claims(claims)
+    
+    def select_interventions(self, claims: List[Claim]) -> List[Any]:
+        """
+        Select interventions for potential hallucinations.
+        
+        Args:
+            claims: Claims to analyze for interventions
+            
+        Returns:
+            List of recommended interventions
+        """
+        return self.intervention_selector.select_interventions(claims)
+    
+    def highlight_verification_result(
         self, 
         verification_result: VerificationResult,
         format: str = "html"
     ) -> str:
         """
-        Generate a highlighted version of the response showing confidence levels.
+        Generate highlighted visualization of verification result.
         
         Args:
-            verification_result: The verification result to visualize
+            verification_result: Verification result to visualize
             format: Output format ('html', 'markdown', or 'text')
             
         Returns:
-            Highlighted response with confidence indicators
+            Highlighted text with confidence indicators
         """
-        # TODO: Implement response highlighting functionality
-        logger.debug("Generating highlighted response in %s format", format)
-        
         from .visualization.highlighter import highlight_verification_result
-        return highlight_verification_result(verification_result, format=format)
+        return highlight_verification_result(verification_result, format)
     
     def generate_corrected_response(
-        self,
+        self, 
         verification_result: VerificationResult,
-        correction_strategy: str = "conservative"
+        strategy: str = "balanced"
     ) -> str:
         """
-        Generate a corrected version of the response based on verification results.
+        Generate a corrected version of the response.
         
         Args:
-            verification_result: The verification result to use for correction
-            correction_strategy: Strategy for corrections ('conservative', 'aggressive')
+            verification_result: Verification result to correct
+            strategy: Correction strategy ('conservative', 'balanced', or 'aggressive')
             
         Returns:
             Corrected response text
         """
-        # TODO: Implement response correction functionality
-        logger.debug("Generating corrected response with %s strategy", correction_strategy)
-        
         from .handlers.corrections import generate_corrected_response
-        return generate_corrected_response(verification_result, strategy=correction_strategy)
+        return generate_corrected_response(verification_result, strategy)
     
-    def analyze_verification_patterns(
-        self,
-        verification_results: List[VerificationResult]
-    ) -> Dict[str, Any]:
+    def generate_report(
+        self, 
+        verification_result: VerificationResult,
+        format: str = "html"
+    ) -> Union[str, VerificationReport]:
         """
-        Analyze patterns across multiple verification results.
+        Generate a detailed report on verification results.
         
         Args:
-            verification_results: List of verification results to analyze
+            verification_result: Verification result to report on
+            format: Output format ('html', 'json', or 'object')
             
         Returns:
-            Analysis of verification patterns and trends
+            Report in the requested format
         """
-        # TODO: Implement verification pattern analysis
-        logger.debug("Analyzing patterns across %d verification results", 
-                    len(verification_results))
+        from .visualization.reporting import ReportGenerator
+        report_generator = ReportGenerator()
         
-        # This is a placeholder for future functionality
-        return {
-            "total_results": len(verification_results),
-            "average_confidence": sum(r.confidence_score for r in verification_results) / len(verification_results) if verification_results else 0,
-            "hallucination_rate": sum(1 for r in verification_results for c in r.claims if c.confidence_score < 0.5) / sum(len(r.claims) for r in verification_results) if verification_results else 0,
-            # Additional pattern analysis would go here
-        }
-
-
-# Convenient alias
-Verifier = VerificationProcessor
+        if format == "html":
+            return report_generator.generate_html_report(verification_result)
+        elif format == "json":
+            return report_generator.generate_json_report(verification_result)
+        else:
+            return report_generator.generate_report(verification_result)

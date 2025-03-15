@@ -1,33 +1,25 @@
 """
 HalluciNOT: Document-Grounded Verification for Large Language Models
 
-HalluciNOT is a modular toolkit for detecting, measuring, and mitigating
+HalluciNOT is a modular toolkit for detecting, measuring, and mitigating 
 hallucinations in LLM outputs when working with document-based content.
-It leverages rich document structure and metadata to efficiently verify
-LLM-generated content against source materials.
-
-The package provides tools for claim extraction, source mapping, confidence
-scoring, and hallucination management in LLM-powered applications.
 """
 
-__version__ = '0.1.0'
+__version__ = "0.1.0"
 
-# Core verification components
-from .processor import VerificationProcessor, Verifier
-from .claim_extraction.extractor import ClaimExtractor
+from .processor import VerificationProcessor
+from .claim_extraction.extractor import ClaimExtractor, ClaimMerger
 from .source_mapping.mapper import SourceMapper
 from .confidence.scorer import ConfidenceScorer, ConfidenceCalibrator
-from .visualization.reporting import ReportGenerator
-from .visualization.highlighter import highlight_verification_result
 from .handlers.strategies import InterventionSelector
 from .handlers.corrections import generate_corrected_response
-
-# Data structures
+from .visualization.highlighter import highlight_verification_result, create_confidence_legend
+from .visualization.reporting import ReportGenerator
 from .utils.common import (
-    Claim,
-    ClaimType,
-    DocumentChunk,
-    DocumentStore,
+    Claim, 
+    ClaimType, 
+    DocumentChunk, 
+    DocumentStore, 
     SourceReference,
     Intervention,
     InterventionType,
@@ -36,43 +28,26 @@ from .utils.common import (
     BoundaryType
 )
 
-# ByteMeSumAI integration
-from .integration.bytemesumai import (
-    ByteMeSumAIAdapter,
-    VerificationMetadataEnricher,
-    ByteMeSumAIDocumentStore
-)
+# Optional ByteMeSumAI integration
+try:
+    from .integration.bytemesumai import (
+        ByteMeSumAIAdapter,
+        ByteMeSumAIDocumentStore,
+        VerificationMetadataEnricher
+    )
+    __has_bytemesumai__ = True
+except ImportError:
+    __has_bytemesumai__ = False
 
-# Version information
-__author__ = 'Your Name'
-__email__ = 'your.email@example.com'
-__all__ = [
-    # Core components
-    'VerificationProcessor',
-    'Verifier',
-    'ClaimExtractor',
-    'SourceMapper',
-    'ConfidenceScorer',
-    'ConfidenceCalibrator',
-    'ReportGenerator',
-    'highlight_verification_result',
-    'InterventionSelector',
-    'generate_corrected_response',
+# Create a default verifier factory function for easy usage
+def create_verifier(config=None):
+    """
+    Create a VerificationProcessor with default or custom configuration.
     
-    # Data structures
-    'Claim',
-    'ClaimType',
-    'DocumentChunk',
-    'DocumentStore',
-    'SourceReference',
-    'Intervention',
-    'InterventionType',
-    'VerificationResult',
-    'VerificationReport',
-    'BoundaryType',
-    
-    # ByteMeSumAI integration
-    'ByteMeSumAIAdapter',
-    'VerificationMetadataEnricher',
-    'ByteMeSumAIDocumentStore',
-]
+    Args:
+        config: Optional configuration dictionary
+        
+    Returns:
+        Configured VerificationProcessor
+    """
+    return VerificationProcessor(config)
