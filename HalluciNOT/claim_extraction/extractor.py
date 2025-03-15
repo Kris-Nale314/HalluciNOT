@@ -1,5 +1,7 @@
 # Copyright (c) 2025 Kris Naleszkiewicz
-# Licensed under the MIT License - see LICENSE file for details"""
+# Licensed under the MIT License - see LICENSE file for details
+
+"""
 Claim Extraction Module
 
 This module is responsible for extracting discrete factual claims from

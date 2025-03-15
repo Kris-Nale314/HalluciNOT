@@ -27,51 +27,51 @@
             <div class="report-container">
                 <div class="report-header">
                     <h1>Verification Report</h1>
-                    <p>Generated on: 2025-03-15 09:06:15</p>
+                    <p>Generated on: 2025-03-15 10:10:07</p>
                 </div>
                 
                 <div class="metrics">
                     <div class="metric-card">
                         <h3>Overall Confidence</h3>
-                        <div class="metric-value confidence-high">
-                            0.70
+                        <div class="metric-value confidence-medium">
+                            0.34
                         </div>
                     </div>
                     
                     <div class="metric-card">
                         <h3>Verified Claims</h3>
                         <div class="metric-value">
-                            2/3
+                            1/2
                         </div>
                     </div>
                     
                     <div class="metric-card">
                         <h3>Hallucination Score</h3>
                         <div class="metric-value confidence-medium">
-                            0.33
+                            0.50
                         </div>
                     </div>
                 </div>
                 
                 <div class="report-summary">
                     <h2>Summary</h2>
-                    <p>The response has moderate factual accuracy, with 2/3 claims supported by source material. Significant hallucinations were detected (33% of claims).
+                    <p>The response has low factual accuracy, with only 1/2 claims supported by source material. Significant hallucinations were detected (50% of claims).
 
-Recommended interventions: 1 total, 1 removals.</p>
+Recommended interventions: 2 total, 1 uncertainty qualifications, 1 removals.</p>
                 </div>
         
                 <h2>Claim Analysis</h2>
             
-                <div class="claim-card claim-high">
-                    <h3>Claim: "The history of artificial neural networks began with Warren McCulloch and Walter Pitts in 1943."</h3>
-                    <p><strong>Type:</strong> temporal</p>
-                    <p><strong>Confidence:</strong> <span class="confidence-high">1.00</span></p>
+                <div class="claim-card claim-medium">
+                    <h3>Claim: "The history of artificial neural networks began with Warren McCulloch and Walter Pitts in 1943.Google developed BERT in 2019, which was a major breakthrough in bidirectional language understanding."</h3>
+                    <p><strong>Type:</strong> numerical</p>
+                    <p><strong>Confidence:</strong> <span class="confidence-medium">0.57</span></p>
                 
                     <h4>Sources:</h4>
                     
                         <div>
                             <p><strong>Document:</strong> ai_history.txt</p>
-                            <p><strong>Alignment:</strong> 1.00</p>
+                            <p><strong>Alignment:</strong> 0.50</p>
                             <div class="source-excerpt">
                                 The first artificial neural network was developed by Warren McCulloch and Walter Pitts in 1943.
                             </div>
@@ -79,17 +79,23 @@ Recommended interventions: 1 total, 1 removals.</p>
                         
                         <div>
                             <p><strong>Document:</strong> ai_history.txt</p>
-                            <p><strong>Alignment:</strong> 1.00</p>
+                            <p><strong>Alignment:</strong> 0.50</p>
                             <div class="source-excerpt">
                                 Frank Rosenblatt created the perceptron in 1958, which was the first implementation of a trainable artificial neural network.
                             </div>
                         </div>
                         
+                    <div class="intervention">
+                        <h4>Recommended Intervention: uncertainty</h4>
+                        <p><strong>Recommendation:</strong> Add uncertainty qualification to indicate limited source support</p>
+                        <p><strong>Explanation:</strong> Claim has borderline confidence score (0.57). Has 2 partial sources, but support is limited.</p>
+                    </div>
+                    
                 </div>
                 
                 <div class="claim-card claim-low">
-                    <h3>Claim: "They developed the first computational model based on mathematical algorithms that mimicked neural networks."</h3>
-                    <p><strong>Type:</strong> other</p>
+                    <h3>Claim: "Today, neural networks power most advanced AI systems including self-driving cars and medical diagnostics."</h3>
+                    <p><strong>Type:</strong> temporal</p>
                     <p><strong>Confidence:</strong> <span class="confidence-low">0.10</span></p>
                 
                     <p><strong>Sources:</strong> No supporting sources found</p>
@@ -100,31 +106,6 @@ Recommended interventions: 1 total, 1 removals.</p>
                         <p><strong>Explanation:</strong> Claim has very low confidence score (0.10) and insufficient source support (0 sources).</p>
                     </div>
                     
-                </div>
-                
-                <div class="claim-card claim-high">
-                    <h3>Claim: "In 1957, Frank Rosenblatt invented the perceptron, which was the first trainable neural network model.Today, neural networks power most advanced AI systems including self-driving cars and medical diagnostics."</h3>
-                    <p><strong>Type:</strong> temporal</p>
-                    <p><strong>Confidence:</strong> <span class="confidence-high">1.00</span></p>
-                
-                    <h4>Sources:</h4>
-                    
-                        <div>
-                            <p><strong>Document:</strong> ai_history.txt</p>
-                            <p><strong>Alignment:</strong> 1.00</p>
-                            <div class="source-excerpt">
-                                The first artificial neural network was developed by Warren McCulloch and Walter Pitts in 1943.
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <p><strong>Document:</strong> ai_history.txt</p>
-                            <p><strong>Alignment:</strong> 1.00</p>
-                            <div class="source-excerpt">
-                                Frank Rosenblatt created the perceptron in 1958, which was the first implementation of a trainable artificial neural network.
-                            </div>
-                        </div>
-                        
                 </div>
                 
                 <div class="footer">
